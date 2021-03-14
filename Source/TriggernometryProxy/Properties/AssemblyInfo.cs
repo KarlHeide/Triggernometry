@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("© 2016-2021 Paissa Heavy Industries")]
+[assembly: AssemblyCopyright("© 2016-2021 Paissa Heavy Industries & NiniTechnology")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

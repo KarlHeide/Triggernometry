@@ -13,7 +13,9 @@ namespace Triggernometry
         public enum SourceEnum
         {
             Log,
-            NetworkFFXIV
+            NetworkFFXIV,
+            OriginalLog,
+
         }
 
         public string Text { get; set; }

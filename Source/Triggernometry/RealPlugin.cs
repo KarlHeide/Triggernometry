@@ -440,6 +440,7 @@ namespace Triggernometry
         internal List<Trigger> Triggers;
         internal List<Trigger> ActiveTextTriggers;
         internal List<Trigger> ActiveFFXIVNetworkTriggers;
+        internal List<Trigger> ActiveOriginalTextTriggers;
         internal VariableStore sessionvars;
         internal Dictionary<string, Forms.AuraContainerForm> imageauras;
         internal Dictionary<string, Forms.AuraContainerForm> textauras;
@@ -1113,6 +1114,7 @@ namespace Triggernometry
             Triggers = new List<Trigger>();
             ActiveTextTriggers = new List<Trigger>();
             ActiveFFXIVNetworkTriggers = new List<Trigger>();
+            ActiveOriginalTextTriggers = new List<Trigger>();
             sessionvars = new VariableStore();
             imageauras = new Dictionary<string, Forms.AuraContainerForm>();
             textauras = new Dictionary<string, Forms.AuraContainerForm>();
@@ -1146,6 +1148,12 @@ namespace Triggernometry
                                 ActiveFFXIVNetworkTriggers.Add(t);
                             }
                             break;
+                        case Trigger.TriggerSourceEnum.OriginalLog:
+                            lock (ActiveOriginalTextTriggers)
+                            {
+                                ActiveOriginalTextTriggers.Add(t);
+                            }
+                            break;
                         case Trigger.TriggerSourceEnum.None:
                             break;
                     }
@@ -1171,6 +1179,12 @@ namespace Triggernometry
                             ActiveFFXIVNetworkTriggers.Remove(t);
                         }
                         break;
+                    case Trigger.TriggerSourceEnum.OriginalLog:
+                        lock (ActiveOriginalTextTriggers)
+                        {
+                            ActiveOriginalTextTriggers.Remove(t);
+                        }
+                        break;
                     case Trigger.TriggerSourceEnum.None:
                         break;
                 }
@@ -1186,6 +1200,12 @@ namespace Triggernometry
                         lock (ActiveFFXIVNetworkTriggers)
                         {
                             ActiveFFXIVNetworkTriggers.Add(t);
+                        }
+                        break;
+                    case Trigger.TriggerSourceEnum.OriginalLog:
+                        lock (ActiveOriginalTextTriggers)
+                        {
+                            ActiveOriginalTextTriggers.Add(t);
                         }
                         break;
                     case Trigger.TriggerSourceEnum.None:
@@ -1215,6 +1235,15 @@ namespace Triggernometry
                             if (ActiveFFXIVNetworkTriggers.Contains(t) == true)
                             {
                                 ActiveFFXIVNetworkTriggers.Remove(t);
+                            }
+                        }
+                        break;
+                    case Trigger.TriggerSourceEnum.OriginalLog:
+                        lock (ActiveOriginalTextTriggers)
+                        {
+                            if (ActiveOriginalTextTriggers.Contains(t) == true)
+                            {
+                                ActiveOriginalTextTriggers.Remove(t);
                             }
                         }
                         break;
@@ -1251,6 +1280,17 @@ namespace Triggernometry
                         }
                     }
                     break;
+                case Trigger.TriggerSourceEnum.OriginalLog:
+                    lock (ActiveOriginalTextTriggers)
+                    {
+                        if (ActiveOriginalTextTriggers.Contains(t) == false)
+                        {
+                            FilteredAddToLog(DebugLevelEnum.Verbose, I18n.Translate("internal/Plugin/trigaddbook", "Trigger '{0}' added to bookkeeping", t.LogName));
+                            ActiveOriginalTextTriggers.Add(t);
+                            return;
+                        }
+                    }
+                    break;
                 case Trigger.TriggerSourceEnum.None:
                     break;            }
         }
@@ -1277,6 +1317,17 @@ namespace Triggernometry
                         {
                             FilteredAddToLog(DebugLevelEnum.Verbose, I18n.Translate("internal/Plugin/trigrembook", "Trigger '{0}' removed from bookkeeping", t.LogName));
                             ActiveFFXIVNetworkTriggers.Remove(t);
+                            return;
+                        }
+                    }
+                    break;
+                case Trigger.TriggerSourceEnum.OriginalLog:
+                    lock (ActiveOriginalTextTriggers)
+                    {
+                        if (ActiveOriginalTextTriggers.Contains(t) == true)
+                        {
+                            FilteredAddToLog(DebugLevelEnum.Verbose, I18n.Translate("internal/Plugin/trigrembook", "Trigger '{0}' removed from bookkeeping", t.LogName));
+                            ActiveOriginalTextTriggers.Remove(t);
                             return;
                         }
                     }
@@ -2915,6 +2966,19 @@ namespace Triggernometry
                         }
                     }
                     break;
+                case LogEvent.SourceEnum.OriginalLog:
+                    lock (ActiveOriginalTextTriggers) // verified
+                    {
+                        foreach (Trigger t in ActiveOriginalTextTriggers)
+                        {
+                            if (t.ZoneBlocked == true)
+                            {
+                                continue;
+                            }
+                            TestTrigger(t, le, Action.TriggerForceTypeEnum.NoSkip);
+                        }
+                    }
+                    break;
             }
             double del = (DateTime.Now - le.Timestamp).TotalMilliseconds;
             if (del > 100.0)
@@ -2987,6 +3051,49 @@ namespace Triggernometry
                         }
                         LogLineQueuer(logLine, detectedZone, LogEvent.SourceEnum.Log);
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                FilteredAddToLog(DebugLevelEnum.Error, I18n.Translate("internal/Plugin/procex", "Exception ({0}) when processing log line ({1}) in zone ({2})", ex.Message, logLine, detectedZone));
+            }
+        }
+        public void BeforeLogLineRead(bool isImport, string logLine, string detectedZone)
+        {
+            if (isImport == true)
+            {
+                return;
+            }
+            if (currentZone == null || detectedZone != currentZone)
+            {
+                currentZone = detectedZone;
+                ZoneChanged(currentZone);
+            }
+            try
+            {
+                if (cfg.EventSeparator.Length > 0)
+                {
+                    string[] lines = logLine.Split(new string[] { cfg.EventSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string line in lines)
+                    {
+
+                        if (cfg.LogNormalEvents == true)
+                        {
+                            FilteredAddToLog(DebugLevelEnum.Verbose, I18n.Translate("internal/Plugin/splitlogline", "Split log line: ({0})", line));
+                        }
+                        LogLineQueuer(line, detectedZone, LogEvent.SourceEnum.OriginalLog);
+
+                    }
+                }
+                else
+                {
+
+                    if (cfg.LogNormalEvents == true)
+                    {
+                        FilteredAddToLog(DebugLevelEnum.Verbose, I18n.Translate("internal/Plugin/logline", "Log line: ({0})", logLine));
+                    }
+                    LogLineQueuer(logLine, detectedZone, LogEvent.SourceEnum.OriginalLog);
+
                 }
             }
             catch (Exception ex)

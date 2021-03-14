@@ -211,8 +211,11 @@ namespace Triggernometry.Forms
                     case Trigger.TriggerSourceEnum.FFXIVNetwork:
                         cbxTriggerSource.SelectedIndex = 1;
                         break;
-                    case Trigger.TriggerSourceEnum.None:
+                    case Trigger.TriggerSourceEnum.OriginalLog:
                         cbxTriggerSource.SelectedIndex = 2;
+                        break;
+                    case Trigger.TriggerSourceEnum.None:
+                        cbxTriggerSource.SelectedIndex = 3;
                         break;
                 }
                 expRefirePeriod.Expression = t._RefirePeriodExpression;
@@ -300,6 +303,9 @@ namespace Triggernometry.Forms
                     t._Source = Trigger.TriggerSourceEnum.FFXIVNetwork;
                     break;
                 case 2:
+                    t._Source = Trigger.TriggerSourceEnum.OriginalLog;
+                    break;
+                case 3:
                     t._Source = Trigger.TriggerSourceEnum.None;
                     break;
             }
