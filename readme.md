@@ -1,5 +1,5 @@
 ## About this branch
-Modified by NiniTechnology. Some additional functions and functions will be added in the future to optimize the user experience.
+Modified by NiniTechnology. Some additional features and functions will be added in the future to optimize the user experience.
 
 1.Add a new Trigger event source "Original log lines", which allow triggers to access raw log lines. Raw log lines contains more information and they can be useful when we need to test our triggers. They often have information like this: 
 
