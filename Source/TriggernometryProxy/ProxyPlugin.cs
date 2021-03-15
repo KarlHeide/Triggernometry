@@ -283,8 +283,18 @@ namespace TriggernometryProxy
         {
             Advanced_Combat_Tracker.FormActMain act = Advanced_Combat_Tracker.ActGlobals.oFormActMain;
             FieldInfo fi = act.GetType().GetField("defaultTextFormat", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
-            dynamic texf = fi.GetValue(act);
-            if (texf != null)
+            dynamic defaultTextFormat = fi.GetValue(act);
+            fi = act.GetType().GetField("textExportFormats", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+            dynamic textExportFormats = fi.GetValue(act);
+            fi = act.GetType().GetField("opMiniParse", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+            dynamic opMiniParse = fi.GetValue(act);
+            fi = opMiniParse.GetType().GetField("ddlMiniFormat", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+            dynamic ddlMiniFormat = fi.GetValue(opMiniParse);
+            if (ddlMiniFormat.SelectedIndex != -1)
+            {
+                defaultTextFormat = textExportFormats[ddlMiniFormat.SelectedIndex];
+            }
+            if (defaultTextFormat != null)
             {
                 int zones = act.ZoneList.Count;
                 for (int ii = zones - 1; ii >= 0; ii--)
@@ -294,7 +304,7 @@ namespace TriggernometryProxy
                     {
                         if (act.ZoneList[ii].Items[jj] != act.ActiveZone.ActiveEncounter)
                         {
-                            return act.GetTextExport(act.ZoneList[ii].Items[jj], texf);
+                            return act.GetTextExport(act.ZoneList[ii].Items[jj], defaultTextFormat);
                         }
                     }
                 }
@@ -304,10 +314,23 @@ namespace TriggernometryProxy
 
         public string ExportActiveEncounter()
         {
+
             Advanced_Combat_Tracker.FormActMain act = Advanced_Combat_Tracker.ActGlobals.oFormActMain;
             FieldInfo fi = act.GetType().GetField("defaultTextFormat", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
-            dynamic texf = fi.GetValue(act);
-            return act.GetTextExport(act.ActiveZone.ActiveEncounter, texf);
+            dynamic defaultTextFormat = fi.GetValue(act);
+            fi = act.GetType().GetField("textExportFormats", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+            dynamic textExportFormats = fi.GetValue(act);
+            fi = act.GetType().GetField("opMiniParse", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+            dynamic opMiniParse = fi.GetValue(act);
+            fi = opMiniParse.GetType().GetField("ddlMiniFormat", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+            dynamic ddlMiniFormat = fi.GetValue(opMiniParse);
+            if (ddlMiniFormat.SelectedIndex != -1)
+            {
+                defaultTextFormat = textExportFormats[ddlMiniFormat.SelectedIndex];
+            }
+
+            return act.GetTextExport(act.ActiveZone.ActiveEncounter, defaultTextFormat);
+            
         }
 
         public double GetEncounterDuration()

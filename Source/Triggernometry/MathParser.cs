@@ -29,11 +29,25 @@ namespace Triggernometry
 
         public double Hex2DecFunction(string[] x)
         {
-            int ex = int.Parse(x[0], System.Globalization.NumberStyles.HexNumber);
+           int ex = int.Parse(x[0], System.Globalization.NumberStyles.HexNumber);
             double xy = ex;
             return xy;
         }
-
+        public double Hex2FloatFunction(string[] x)
+        {
+     
+            int bytesArray = int.Parse(x[0], System.Globalization.NumberStyles.HexNumber);
+            float f = BitConverter.ToSingle(BitConverter.GetBytes(bytesArray), 0);
+            return (double)f;
+        }
+        public double Hex2Pos4Function(string[] x)
+        {
+            float pos = UInt16.Parse(x[0], System.Globalization.NumberStyles.HexNumber);
+            float factor = 32.767f;
+            float center = 32767f;
+            pos = (pos - center) / factor;
+            return (double)pos;
+        }
         public double IfFunction(double a, double b, double c)
         {
             return (a == 0) ? c : b;
@@ -221,6 +235,8 @@ namespace Triggernometry
                 LocalFunctions.Add("if", x => IfFunction(x[0], x[1], x[2]));
 
                 LocalStringFunctions.Add("hex2dec", x => Hex2DecFunction(x));
+                LocalStringFunctions.Add("X8float", x => Hex2FloatFunction(x));
+                LocalStringFunctions.Add("X4pos", x => Hex2Pos4Function(x));
             }
 
             if (loadPreDefinedVariables)
