@@ -139,7 +139,6 @@ namespace TriggernometryProxy
             FailsafeRegisterHook("InstanceHook", "GetInstance");
             GetPluginNameAndPath();
             ActGlobals.oFormActMain.OnLogLineRead += OFormActMain_OnLogLineRead;
-            ActGlobals.oFormActMain.BeforeLogLineRead += OFormActMain_BeforeLogLineRead;
             Instance.InitPlugin(pluginScreenSpace, pluginStatusText);
         }
 
@@ -230,7 +229,6 @@ namespace TriggernometryProxy
         public void DeInitPlugin()
         {            
             ActGlobals.oFormActMain.OnLogLineRead -= OFormActMain_OnLogLineRead;
-            ActGlobals.oFormActMain.BeforeLogLineRead -= OFormActMain_BeforeLogLineRead;
             Instance.DeInitPlugin();
             HideCornerNotification();
         }
@@ -239,10 +237,7 @@ namespace TriggernometryProxy
         {
             Instance.OnLogLineRead(isImport, logInfo.logLine, logInfo.detectedZone);
         }
-        private void OFormActMain_BeforeLogLineRead(bool isImport, LogLineEventArgs logInfo)
-        {
-            Instance.BeforeLogLineRead(isImport, logInfo.originalLogLine, logInfo.detectedZone);
-        }
+
         public void GetPluginNameAndPath()
         {
             Instance.path = Path.Combine(ActGlobals.oFormActMain.AppDataFolder.FullName, "Config");

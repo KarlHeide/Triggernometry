@@ -44,7 +44,6 @@ namespace Triggernometry
         {
             Log,
             FFXIVNetwork,
-            OriginalLog,
             None
         }
 
