@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## About this branch
 Modified by NiniTechnology. Some additional features and functions will be added in the future to optimize the user experience.
 
@@ -10,6 +11,8 @@ Modified by NiniTechnology. Some additional features and functions will be added
 for more information about this:
 https://github.com/quisquous/cactbot/blob/main/docs/LogGuide.md#fb-debug
 
+=======
+>>>>>>> parent of ee001e2 (Update readme.md)
 =======
 >>>>>>> parent of ee001e2 (Update readme.md)
 ## Documentation
