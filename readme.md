@@ -9,10 +9,6 @@ Modified by NiniTechnology. Some additional features and functions will be added
 for more information about this:
 https://github.com/quisquous/cactbot/blob/main/docs/LogGuide.md#fb-debug
 
-=======
->>>>>>> parent of ee001e2 (Update readme.md)
-=======
->>>>>>> parent of ee001e2 (Update readme.md)
 ## Documentation
 
 Triggernometry has a Wiki, containing useful information and documentation:
